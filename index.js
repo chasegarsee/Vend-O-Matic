@@ -48,7 +48,7 @@ let beverage_vending = {
     {
       id: 3,
       item: "Vitamin Water",
-      quantity: 5,
+      quantity: 0,
     },
   ],
 };
@@ -98,12 +98,14 @@ app.put("/inventory/:id", (req, res) => {
   let beverage = beverage_vending.inventory.filter((item) => {
     return item.id == req.params.id;
   });
+  // If there are no coins in the coins_in_use, the vending machine isnt in_use. Promp to incert coins.
   if (in_use === false) {
     res.set({
       "Content-Type": "application/json",
       "X-Message": `Beverages are $0.50 each. Please insert 2 quarters to purchase beverage.`,
     });
     res.sendStatus(400);
+    // ERROR HANDLING: If there is only 1 Quarter, prompt to incert 1 additional.
   } else if (coins_in_use < 2) {
     res.set({
       "Content-Type": "application/json",
@@ -111,7 +113,16 @@ app.put("/inventory/:id", (req, res) => {
       "X-Coins": coins_in_use,
     });
     res.sendStatus(403);
+    //ERROR HANDLING: If there are enough coins, but the beverage is unavailable - Notify
+  } else if (coins_in_use > 1 && beverage[0].quantity === 0) {
+    res.set({
+      "Content-Type": "application/json",
+      "X-Message": `${beverage[0].item} is no longer in stock.`,
+      "X-Coins": coins_in_use,
+    });
+    res.sendStatus(404);
   } else {
+    // successful transaction
     let beverage_new_quantity = beverage[0].quantity - 1;
     let new_beverage_data = {
       id: beverage[0].id,

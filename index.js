@@ -88,6 +88,7 @@ app.put("/", (req, res) => {
   req.body = { coin: 1 };
   coins_in_use += 1;
   res.set({
+    "Content-Type": "application/json",
     "X-Coins": coins_in_use,
   });
   res.status(204).json(coins_in_use);
@@ -152,6 +153,19 @@ app.put("/inventory/:id", (req, res) => {
 });
 
 // 5: DELETE request to handle coin returns if the Customer decides not to buy anything at all.
+
+app.delete("/", (req, res) => {
+  if (in_use) {
+    in_use = false;
+    customer_remaining_coins = coins_in_use;
+    coins_in_use = 0;
+    res.set({
+      "Content-Type": "application/json",
+      "X-Coins": customer_remaining_coins,
+    });
+    res.sendStatus(204);
+  }
+});
 
 const testServer = http.createServer(app);
 testServer.listen(4040);

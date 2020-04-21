@@ -7,6 +7,52 @@ app.use(express.json());
 /* THE PLAN */
 
 // 1: Initialize the Vending Machine Data.
+
+//  add different US coins for invalid coin error handling later on?
+
+let penny = {
+  diameter: "19.05mm",
+  thickness: "1.52mm",
+};
+let nickel = {
+  diameter: "21.21mm",
+  thickness: "1.95mm",
+};
+
+let dime = {
+  diameter: "17.91mm",
+  thickness: "1.35mm",
+};
+
+let quarter = {
+  diameter: 24.26,
+  thickness: 1.75,
+};
+
+let beverage_vending = {
+  coin_slot_dimentions: quarter,
+  in_use: false,
+  coins_in_use: 0,
+  coin_total: 0, // <-- for total coins accrued endpoint posibility.
+  inventory: [
+    {
+      id: 1,
+      item: "Powerade",
+      quantity: 5,
+    },
+    {
+      id: 2,
+      item: "Gatorade",
+      quantity: 5,
+    },
+    {
+      id: 3,
+      item: "Vitamin Water",
+      quantity: 5,
+    },
+  ],
+};
+
 // 2: Both GET requests to allow data visualization (maybe add a bonus request in to see how many coins/¢ have been accrued?).
 // 3: PUT request to handle coin insertion.
 // 4: PUT request to handle beverage purchase. Including error handling if item is out of stock, or insufficient coins.

@@ -77,6 +77,22 @@ app.get("/inventory/:id", (req, res) => {
 });
 
 // 3: PUT request to handle coin insertion.
+
+let in_use = beverage_vending.in_use;
+let coins_in_use = beverage_vending.coins_in_use;
+
+app.put("/", (req, res) => {
+  if (in_use === false) {
+    in_use = true;
+  }
+  req.body = { coin: 1 };
+  coins_in_use += 1;
+  res.set({
+    "X-Coins": coins_in_use,
+  });
+  res.status(204).json(coins_in_use);
+});
+
 // 4: PUT request to handle beverage purchase. Including error handling if item is out of stock, or insufficient coins.
 // 5: DELETE request to handle coin returns.
 

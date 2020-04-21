@@ -54,6 +54,28 @@ let beverage_vending = {
 };
 
 // 2: Both GET requests to allow data visualization (maybe add a bonus request in to see how many coins/¢ have been accrued?).
+
+// GET inventory. Array of remaining item quantities. Integers.
+app.get("/inventory", (req, res) => {
+  let total_inventory = [];
+  beverage_vending.inventory.forEach((item) => {
+    total_inventory.push(item.quantity);
+  });
+  res.status(200).json(total_inventory);
+});
+
+// GET inventory for single item. Integer
+
+app.get("/inventory/:id", (req, res) => {
+  let beverage = beverage_vending.inventory.filter((item) => {
+    return item.id == req.params.id;
+  });
+  let response_body = {
+    quantity: beverage[0].quantity,
+  };
+  res.status(200).json(response_body);
+});
+
 // 3: PUT request to handle coin insertion.
 // 4: PUT request to handle beverage purchase. Including error handling if item is out of stock, or insufficient coins.
 // 5: DELETE request to handle coin returns.

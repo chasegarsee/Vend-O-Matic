@@ -94,7 +94,53 @@ app.put("/", (req, res) => {
 });
 
 // 4: PUT request to handle beverage purchase. Including error handling if item is out of stock, or insufficient coins.
-// 5: DELETE request to handle coin returns.
+app.put("/inventory/:id", (req, res) => {
+  let beverage = beverage_vending.inventory.filter((item) => {
+    return item.id == req.params.id;
+  });
+  if (in_use === false) {
+    res.set({
+      "Content-Type": "application/json",
+      "X-Message": `Beverages are $0.50 each. Please insert 2 quarters to purchase beverage.`,
+    });
+    res.sendStatus(400);
+  } else if (coins_in_use < 2) {
+    res.set({
+      "Content-Type": "application/json",
+      "X-Message": `Beverages are $0.50 each. Please insert 1 additional quarter`,
+      "X-Coins": coins_in_use,
+    });
+    res.sendStatus(403);
+  } else {
+    let beverage_new_quantity = beverage[0].quantity - 1;
+    let new_beverage_data = {
+      id: beverage[0].id,
+      item: beverage[0].item,
+      quantity: beverage_new_quantity,
+    };
+
+    let selected_beverage = beverage_vending.inventory.indexOf(beverage[0]);
+    beverage_vending.inventory.splice(selected_beverage, 1, new_beverage_data);
+
+    // Math for quarters
+    beverage_vending.coin_total += 2;
+    coins_in_use -= 2;
+    let customer_remaining_coins = coins_in_use;
+    coins_in_use = 0;
+
+    in_use = false;
+    let body = { quantity: 1 };
+    res.set({
+      "Content-Type": "application/json",
+      "X-Coins": `${customer_remaining_coins}`,
+      "X-Message": `${beverage[0].item}`,
+      "X-Inventory-Remaining": beverage_new_quantity,
+    });
+    res.status(200).send(body);
+  }
+});
+
+// 5: DELETE request to handle coin returns if the Customer decides not to buy anything at all.
 
 const testServer = http.createServer(app);
 testServer.listen(4040);

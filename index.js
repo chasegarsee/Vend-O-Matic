@@ -48,7 +48,7 @@ let beverage_vending = {
     {
       id: 3,
       item: "Vitamin Water",
-      quantity: 0,
+      quantity: 5,
     },
   ],
 };
@@ -162,6 +162,14 @@ app.delete("/", (req, res) => {
     res.set({
       "Content-Type": "application/json",
       "X-Coins": customer_remaining_coins,
+    });
+    res.sendStatus(204);
+  }
+  // Add edge case that customers try to refund money but no quarters have been inserted. (Vending Machine in_use = false)
+  else {
+    res.set({
+      "Content-Type": "application/json",
+      "X-Message": `${coins_in_use} quarters to return`,
     });
     res.sendStatus(204);
   }
